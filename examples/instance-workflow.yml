@@ -1,0 +1,61 @@
+# Copy this file to .github/workflows/job_alert.yml in YOUR PRIVATE repo (the "instance").
+# The private repo holds only your config.yaml, sources.yaml, prefs.json and the data files
+# (seen_jobs.json, inbox.json, matches.md). This workflow fetches the public engine on every
+# run, so improvements to the engine reach you automatically, and your private files are
+# never copied anywhere public.
+#
+# Replace YOUR_USER with the GitHub user that owns the engine repo.
+name: Job Alert Bot
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"   # every 4 hours
+  workflow_dispatch: {}      # manual run from the Actions tab (or /run from Telegram)
+
+permissions:
+  contents: write            # needed to commit the state files back
+
+concurrency:
+  group: job-alert-bot       # never run two at once
+  cancel-in-progress: false
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out your private repo (config and data)
+        uses: actions/checkout@v4
+
+      - name: Check out the engine (public)
+        uses: actions/checkout@v4
+        with:
+          repository: YOUR_USER/jobsift
+          ref: main           # or a tag such as v1 to stay on a version you trust
+          path: engine
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r engine/requirements.txt
+
+      - name: Run the bot
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python engine/main.py
+
+      - name: Save state
+        run: |
+          git config user.name "job-alert-bot"
+          git config user.email "actions@github.com"
+          git add seen_jobs.json matches.md inbox.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Update seen jobs [skip ci]"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs origin main && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep 5
+          done
+          echo "state push failed" && exit 1

@@ -1,0 +1,6 @@
+# Linter settings. Kept in the repo so local runs and CI agree.
+line-length = 100
+
+[lint]
+# E = style errors, F = real bugs (unused imports/variables), I = import order
+select = ["E", "F", "I"]

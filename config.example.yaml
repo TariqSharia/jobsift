@@ -1,0 +1,252 @@
+# ---------------------------------------------------------------
+# jobsift — example configuration.
+# Copy this file to config.yaml and edit the lists to tune what you get notified about.
+# No code changes needed for normal tuning. The word lists below are only a starting
+# point for a backend / full-stack developer: replace them with your own.
+# ---------------------------------------------------------------
+
+# A job must match AT LEAST ONE of these (case-insensitive) to be considered.
+include_keywords:
+  - "node.js"
+  - "nodejs"
+  - "nestjs"
+  - "typescript"
+  - "javascript"
+  - "python"
+  - "backend"
+  - "back-end"
+  - "full stack"
+  - "fullstack"
+  - "software engineer"
+  - "software developer"
+  - "project manager"
+  - "product owner"
+  - "technical program manager"
+  - "solutions engineer"
+  - "product manager"
+  - "product engineer"
+  - "support engineer"
+  - "developer support"
+  - "react"
+  - "laravel"
+  - "postgres"
+  - "integration"
+  - "technical support"
+  - "scrum"
+
+# EVERY source is judged by the job TITLE: it must contain one of these...
+title_keywords:
+  - "developer"
+  - "engineer"
+  - "programmer"
+  - "devops"
+  - "site reliability"
+  - "sre"
+  - "architect"
+  - "technical program manager"
+  - "technical product manager"
+  - "product owner"
+  - "project manager"
+  - "product manager"
+  - "solutions"
+  - "technical account"
+  - "customer engineer"
+  - "developer advocate"
+  - "developer relations"
+  - "full stack"
+  - "full-stack"
+  - "fullstack"
+  - "backend"
+  - "back-end"
+  - "back end"
+  - "node"
+  - "typescript"
+  - "python"
+  # Wider net: mid-level / support / delivery / low-code titles that do not say developer or engineer.
+  - "software"
+  - "web "
+  - "application"
+  - "integration"
+  - "implementation"
+  - "technical support"
+  - "support specialist"
+  - "customer success"
+  - "consultant"
+  - "technical lead"
+  - "tech lead"
+  - "delivery manager"
+  - "scrum"
+
+# ...and must NOT match any of these (regex, on the title only).
+exclude_title_patterns:
+  - '\b(ios|android|mobile|embedded|firmware|hardware|mechanical|electrical|civil|network)\b'
+  - '\b(qa|sdet|quality assurance|test automation|data scientist|data engineer|machine learning|ml|ai research|research scientist)\b'
+  - '\b(salesforce|sap|servicenow|workday|netsuite|abap)\b'
+  - '\bjava\b(?!\s*script)'
+  - '\b(intern|internship|trainee|apprentice)\b'
+  - '\b(director|head of|vp|vice president|chief|principal|staff|distinguished|fellow)\b'
+  - '\b(sales|marketing|account executive|recruiter|recruiting|designer|copywriter|accountant)\b'
+  - '\b(security|penetration|soc analyst|cyber)\b'
+  - '\b(engineering manager|manager of engineering|architect|field engineer|community engineer|solutions architecture)\b'
+
+# Titles that earn the biggest score bonus (closest to your backend/full-stack core).
+core_title_keywords:
+  - "backend"
+  - "back-end"
+  - "back end"
+  - "full stack"
+  - "full-stack"
+  - "fullstack"
+  - "node"
+  - "typescript"
+  - "software engineer"
+  - "software developer"
+  - "product engineer"
+  - "platform engineer"
+  - "devops"
+  - "solutions engineer"
+  - "support engineer"
+  - "developer support"
+
+# Each of these found in the posting adds 1 point (max 3) to the fit score.
+stack_keywords:
+  - "node.js"
+  - "nodejs"
+  - "nestjs"
+  - "typescript"
+  - "postgres"
+  - "docker"
+  - "react"
+  - "rest api"
+
+# Alerts at or above this score get a star. Alerts are sent best-score-first.
+star_score: 7
+
+# Employers you want to double-check: never blocked, only labelled in the alert (the label is
+# `flag_label`), so YOU decide. These are only examples; use your own words or delete the list.
+# Matched against the title, company and the first part of the description.
+flag_label: "check employer"
+flag_patterns:
+  - '\b(crypto\w*|blockchain|defi|web3|nft|stablecoin|bitcoin|exchange wallet)\b'
+  - '\b(forex|trading platform|brokerage|lending|lender|loans?|mortgages?|payday|credit cards?)\b'
+  - '\b(insurtech|insurance (company|platform|carrier|industry))\b'
+  - '\b(neobank|banking|bank|fintech)\b'
+
+# Labelled "🎮 game industry" in the alert (never blocked). Matched on title, company and the
+# start of the description.
+game_flag_patterns:
+  - '\b(video ?games?|gaming|game (studio|developer|development|engine|industry|backend|server)|unity|unreal|playstation|xbox|nintendo|steam|esports?|live ?ops)\b'
+
+# Highest "years of experience" a posting may ask for. Read from the posting text
+# (ranges like "5-8 years" count as their lower end). 0 turns the check off.
+# Change it from Telegram with /maxyears 5 (or /maxyears off).
+max_years: 5
+
+# Most new jobs sent to Telegram in ONE run (best score first). The rest wait and are sent in
+# the next runs, so a big source never floods you and nothing is lost.
+max_per_run: 20
+
+# At most this many jobs from the SAME company in one run, so one big board
+# cannot fill the whole batch. The rest wait for the next runs. 0 turns it off.
+max_per_company: 2
+
+# A job is REJECTED if it matches ANY of these (case-insensitive).
+# This is what filters out the walls: clearance, single-country residency,
+# and industries you don't want (these are only examples).
+exclude_keywords:
+  - "security clearance"
+  - "secret clearance"
+  - "public trust"
+  - "must be a us citizen"
+  - "u.s. citizen"
+  - "us citizenship"
+  - "citizenship required"
+  - "continental united states"
+  - "must reside in the united states"
+  - "must be based in the united states"
+  - "within the uk"
+  - "must have right to work in the uk"
+  - "right to work in the united kingdom"
+  - " us only"
+  - "(us only"
+  - "(u.s. only"
+  - "(us-only"
+  - "- us only"
+  - " u.s. only"
+  - "united states only"
+  - " us-only"
+  - " us-based"
+  - " u.s.-based"
+  - "must be located in the us"
+  - "must be located in the united states"
+  - "authorized to work in the us"
+  - "authorized to work in the united states"
+  - "authorized to work in the u.s."
+  - "eligible to work in the us"
+  - "work authorization"
+  - "must be a resident of the united states"
+  - " uk only"
+  - " eu only"
+  - "eu residents only"
+  - "must be based in europe"
+  - "right to work in the eu"
+  - "w-2 "
+  - "casino"
+  - "gambling"
+  - "betting"
+  - "sportsbook"
+
+# Regex walls (case-insensitive, matched on lowercase text).
+# 1) "remote" but only inside one country  2) "<country> only"
+# 3) job-SEEKER posts (HN threads contain people advertising themselves)
+exclude_patterns:
+  - 'remote\s*[\(\-,:/]\s*(usa?|u\.s\.a?|united\s+states|united\s+kingdom|uk|canada|germany|france|netherlands|spain|poland|portugal|india|brazil|australia|ireland|italy|sweden|denmark|norway|finland|switzerland|austria|belgium|mexico|argentina|colombia)\b'
+  - 'remote\s+(in|within)\s+(the\s+)?(usa?|u\.s\.|united\s+states|uk|united\s+kingdom|canada|germany|france|netherlands|india|australia)\b'
+  - '\b(usa|u\.s\.a?|uk|canada|australia|germany|india|brazil|latam|north\s+america)[\s-]+only\b'
+  # Time-zone wall (example): skip roles tied to US working hours. Adjust to your own time zone.
+  - '\b(est|edt|pst|pdt|cst|cdt|mst|mdt)\b[^.\n]{0,30}(hours|time ?zone|overlap|working)'
+  - '(hours|time ?zone|overlap|working)[^.\n]{0,30}\b(est|edt|pst|pdt|cst|cdt|mst|mdt)\b'
+  - 'overlap (with )?(the )?(us|north america\w*|american|pacific|eastern|central)\b'
+  - '\b(us|north america\w*|american) (time ?zones?|business hours|working hours)'
+  - 'utc\s*-\s*[5-9]\b(?![^.\n]{0,20}\+)'
+  - 'willing to relocate'
+  - 'seeking work|available for hire|open to (work|opportunities)'
+  - 'looking for:'
+  - 'r[ée]sum[ée]\s*/?\s*(cv)?:\s*http'
+
+# Phrases that POSITIVELY suggest the role is truly location-free.
+# A job doesn't need to match these to pass, but if it does, it's
+# flagged with a ✅ in the notification so you know it's a strong bet.
+strong_signal_keywords:
+  - "anywhere in the world"
+  - "work from anywhere"
+  - "worldwide"
+  - "remote - global"
+  - "remote (global)"
+  - "no location restriction"
+  - "emea"
+  - "remote europe"
+  - "remote - europe"
+
+# Where you live. Both are optional.
+# home_region_terms: extra words that make a location field count as open to you, for example
+#   your country or region, so "Europe, Atlantis" is kept instead of blocked as "Europe".
+# home_utc_offsets: UTC offsets you can work in. Sources that list allowed time zones
+#   (tz_field in sources.yaml) drop postings that include none of them. Empty = check off.
+home_region_terms: []
+home_utc_offsets: []
+
+# Titles containing any of these rank 3 points lower (never blocked), so development roles
+# come first and support roles still show up further down. Delete the list to turn it off.
+deprioritize_title_keywords:
+  - "support"
+  - "customer success"
+  - "helpdesk"
+  - "help desk"
+
+# Titles naming a language or area that is not your stack rank 3 points lower (never blocked).
+# Regular expressions, matched on the job TITLE only.
+mismatch_title_patterns:
+  - '\b(go|golang|rust|java|kotlin|swift|scala|elixir|erlang|haskell)\b'
+  - 'c\+\+'
+  - '\b(linux|kernel|firmware|embedded|openstack|kafka|silicon|graphics|windowing|virtuali[sz]ation|blockchain)\b'

@@ -1,0 +1,136 @@
+# ---------------------------------------------------------------
+# Job sources. Add a new one by copying a block — no code needed.
+#
+# type: json      any JSON API. Fields are dotted paths into each item.
+# type: rss       any RSS/Atom feed.
+# type: hn_hiring Hacker News "Who is Hiring" monthly thread.
+#
+# API keys: write ${MY_KEY} anywhere in url/params/headers and set
+# MY_KEY as an environment variable (GitHub secret). Never paste keys here.
+# ---------------------------------------------------------------
+- name: RemoteOK
+  type: json
+  url: https://remoteok.com/api
+  id: id
+  title: position
+  company: company
+  link: url
+  text: [position, company, description, tags, location]
+  require_field: id        # first element of the feed is a metadata blob
+
+- name: Remotive
+  type: json
+  url: https://remotive.com/api/remote-jobs
+  params: {category: software-dev}
+  items_path: jobs
+  id: id
+  title: title
+  company: company_name
+  link: url
+  text: [title, company_name, candidate_required_location, description]
+
+# Extra searches: check the per-source counts in the run summary and delete any that show 0
+# or an error.
+- name: Remotive devops
+  type: json
+  url: https://remotive.com/api/remote-jobs
+  params: {category: devops}
+  items_path: jobs
+  id: id
+  title: title
+  company: company_name
+  link: url
+  text: [title, company_name, candidate_required_location, description]
+
+- name: Remotive support
+  type: json
+  url: https://remotive.com/api/remote-jobs
+  params: {category: customer-support}
+  items_path: jobs
+  id: id
+  title: title
+  company: company_name
+  link: url
+  text: [title, company_name, candidate_required_location, description]
+
+- name: WeWorkRemotely
+  type: rss
+  url: https://weworkremotely.com/categories/remote-programming-jobs.rss
+  geo_from_region: true      # feed has a <region> tag ("Anywhere in the World", "USA Only", ...)
+
+- name: WWR DevOps
+  type: rss
+  url: https://weworkremotely.com/categories/remote-devops-sysadmin-jobs.rss
+  geo_from_region: true
+
+- name: WWR Product
+  type: rss
+  url: https://weworkremotely.com/categories/remote-product-jobs.rss
+  geo_from_region: true
+
+# geo_field / tz_field drop postings restricted to regions or time zones that exclude you
+# (set home_region_terms / home_utc_offsets in config.yaml), before they reach the keyword filters.
+- name: Jobicy
+  type: json
+  url: https://jobicy.com/api/v2/remote-jobs
+  params: {count: 100, industry: dev}
+  items_path: jobs
+  id: id
+  title: jobTitle
+  company: companyName
+  link: url
+  text: [jobTitle, companyName, jobGeo, jobLevel, jobExcerpt, jobDescription]
+  geo_field: jobGeo
+
+- name: Himalayas
+  type: json
+  url: https://himalayas.app/jobs/api
+  params: {limit: 20}
+  pages: 5
+  page_param: offset
+  page_size: 20
+  items_path: jobs
+  id: guid
+  title: title
+  company: companyName
+  link: applicationLink
+  text: [title, companyName, seniority, locationRestrictions, categories, excerpt, description]
+  geo_field: locationRestrictions
+  tz_field: timezoneRestrictions
+
+- name: Working Nomads
+  type: json
+  url: https://www.workingnomads.com/api/exposed_jobs/
+  id: url
+  title: title
+  company: company_name
+  link: url
+  text: [title, company_name, category_name, tags, location, description]
+  geo_field: location
+  geo_allow: [anywhere, worldwide, global, emea, middle east, mena, asia, time zone, timezone, cet, eet, remote]
+
+- name: HN Who Is Hiring
+  type: hn_hiring
+  max_comments: 300
+  # HN posts mix on-site and remote; keep only ones that say remote or a region.
+  # Strict on purpose: plain 'remote' also matches US-only and on-site posts.
+  require_any: [anywhere, worldwide, global, emea, europe, distributed, international, timezone, time zone]
+
+# ---------------------------------------------------------------
+# Remote-first company job boards.
+# One block = many companies on the same system. Only remote-looking
+# roles are kept. To add a company use its board name from its job-page URL:
+#   boards.greenhouse.io/<name>   jobs.ashbyhq.com/<name>   jobs.lever.co/<name>
+# From Telegram: /addcompany ashby posthog
+# ---------------------------------------------------------------
+- name: Greenhouse companies
+  type: greenhouse
+  companies: [gitlab, vercel]
+
+- name: Ashby companies
+  type: ashby
+  companies: [posthog, linear]
+
+- name: Lever companies
+  type: lever
+  companies: []     # add names here (jobs.lever.co/<name>)
