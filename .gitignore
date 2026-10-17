@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.env
+
+# Your personal setup and data never belong in this (public) repo.
+# They live in your own private "instance" repo, see docs/private-instance.md.
+config.yaml
+sources.yaml
+prefs.json
+inbox.json
+seen_jobs.json
+seen_jobs.json.bak
+matches.md
+data/
