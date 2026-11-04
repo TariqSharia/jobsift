@@ -1,5 +1,7 @@
 # jobsift
 
+[![CI](https://github.com/TariqSharia/jobsift/actions/workflows/ci.yml/badge.svg)](https://github.com/TariqSharia/jobsift/actions/workflows/ci.yml)
+
 A small job-alert pipeline: it pulls remote job postings from many sources, filters and
 scores them against your own rules, removes duplicates, and sends the best ones to Telegram.
 It runs for free on GitHub Actions, and you can steer it from your phone through a
@@ -11,6 +13,13 @@ sources ──▶ filter ──▶ score ──▶ dedupe ──▶ cap per run/
   HN, ATS      walls, years)           company)      rest queued)         (inbox.json)
   boards)
 ```
+
+## Why I built it
+
+I was searching for remote work from a country that many employers cannot hire in, and
+most job boards hide that fact until you have already applied. jobsift reads the posting
+text, drops the ones with hard walls (a single country, a security clearance, too many years
+asked) and keeps the rest, so the daily list is short enough to read.
 
 ## What it does
 
@@ -29,6 +38,19 @@ sources ──▶ filter ──▶ score ──▶ dedupe ──▶ cap per run/
   Cloudflare Worker that stores changes in `prefs.json`.
 - **Tested.** Python tests for filters, sources, preferences and the inbox, JavaScript tests
   for the Worker, and CI with lint and a Docker build.
+
+## Known limitations
+
+Written down so nobody has to find them the hard way:
+
+- **Pay parsing is naive.** A dollar amount near words like "funding" or "ARR" can be read as
+  a salary. Pay is used for the score only, never to drop a job.
+- **Country lists are not read.** A posting that says "UK, Ireland, Germany only" in a list
+  is not detected as region-locked unless a wall rule matches its wording.
+- **Boards change.** Source adapters can break when a site changes its markup or API; the
+  summary message shows how many jobs each source returned, so a silent source stands out.
+
+Fixes are welcome, see the tests in `tests/` for the style.
 
 ## Try it locally (no accounts needed)
 
