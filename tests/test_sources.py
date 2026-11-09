@@ -255,3 +255,49 @@ def test_home_region_and_offsets_come_from_config():
     finally:
         sources.configure({})
     assert not sources.geo_ok("Atlantis only")
+
+
+def test_hn_author_flag_labels_new_and_empty_accounts():
+    now = 1_800_000_000
+    day = 86400
+    assert "0 days old, karma 1" in sources.hn_author_flag({"created": now, "karma": 1}, now)
+    assert sources.hn_author_flag({"created": now - 20 * day, "karma": 500}, now)  # too new
+    assert sources.hn_author_flag({"created": now - 60 * day, "karma": 2}, now)    # young, empty
+    assert sources.hn_author_flag({"created": now - 900 * day, "karma": 2}, now) == ""
+    assert sources.hn_author_flag({"created": now - 90 * day, "karma": 300}, now) == ""
+    assert sources.hn_author_flag({}, now) == ""
+
+
+def test_annotate_hn_authors_flags_ranks_down_and_survives_errors():
+    now = 1_800_000_000
+    users = {"newbie": {"created": now - 3600, "karma": 1},
+             "veteran": {"created": now - 2000 * 86400, "karma": 4000}}
+
+    def fetch(name):
+        if name == "broken":
+            raise RuntimeError("HN down")
+        return users[name]
+
+    jobs = [{"author": "newbie", "score": 7}, {"author": "veteran", "score": 7},
+            {"author": "broken", "score": 7}, {"score": 7}]
+    sources.annotate_hn_authors(jobs, fetch=fetch, now=now)
+    assert jobs[0]["score"] == 3 and jobs[0]["suspect"] and "karma 1" in jobs[0]["flags"][0]
+    assert jobs[1]["score"] == 7 and "flags" not in jobs[1]
+    assert jobs[2]["score"] == 7 and jobs[3]["score"] == 7
+
+
+def test_annotate_hn_authors_respects_the_lookup_cap():
+    calls = []
+
+    def fetch(name):
+        calls.append(name)
+        return {}
+
+    jobs = [{"author": f"u{i}", "score": 5} for i in range(10)]
+    sources.annotate_hn_authors(jobs, fetch=fetch, cap=3)
+    assert len(calls) == 3
+
+
+def test_format_job_shows_hires_abroad_label():
+    out = format_job({"title": "T", "source": "S", "url": "u", "abroad": True})
+    assert "hires abroad" in out

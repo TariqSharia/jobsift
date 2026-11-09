@@ -227,3 +227,29 @@ def test_geo_blocked_respects_home_region_terms():
     assert geo_blocked("Europe")
     assert not geo_blocked("Europe, Atlantis", extra_ok=["atlantis"])
     assert geo_blocked("Europe", extra_ok=["atlantis"])
+
+
+def test_abroad_signal_is_labelled_and_ranked_up():
+    config = dict(CONFIG, abroad_signal_keywords=["employer of record", "any time zone"],
+                  core_title_keywords=["backend"])
+    plain = filter_jobs([make_job("Backend role, Node.js")], config)[0]
+    abroad = filter_jobs([make_job("Backend role, Node.js, we use an Employer of Record")],
+                         config)[0]
+    assert plain["abroad"] is False and abroad["abroad"] is True
+    assert abroad["score"] == plain["score"] + 1
+
+
+def test_real_config_walls_drop_hybrid_and_local_language_jobs():
+    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                           "config.example.yaml"), encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+    walls = [
+        "Node.js backend engineer. This is a hybrid role with two days a week in the office.",
+        "Node.js backend engineer. Fortnightly visits to the London office.",
+        "Node.js backend engineer. Fluent English and Bulgarian required.",
+        "Node.js backend engineer. Office-based in Sofia.",
+    ]
+    for text in walls:
+        assert filter_jobs([make_job(text)], config) == [], text
+    open_job = "Node.js backend engineer. Fully remote, work from anywhere. We use hybrid cloud."
+    assert len(filter_jobs([make_job(open_job)], config)) == 1

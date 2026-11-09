@@ -33,6 +33,9 @@ asked) and keeps the rest, so the daily list is short enough to read.
   mention. Alerts go out best first, and a star marks the strongest.
 - **Never floods you.** A cap per run and per company queues the rest for the next runs.
 - **Employer flags.** Words you want to double-check are shown as a label, not blocked.
+- **Poster check on Hacker News.** A post from a brand-new or empty account is labelled and
+  ranked lower, because anyone can post in the monthly thread. Posts that mention contractors,
+  an employer-of-record service or "any time zone" get a "hires abroad" label and a small bonus.
 - **Telegram control.** `/run`, `/status`, `/inbox`, `/job`, `/include`, `/exclude`,
   `/strong`, `/maxyears`, `/addcompany`, `/addrss` and more, handled by a single-file
   Cloudflare Worker that stores changes in `prefs.json`.
@@ -47,6 +50,8 @@ Written down so nobody has to find them the hard way:
   a salary. Pay is used for the score only, never to drop a job.
 - **Country lists are not read.** A posting that says "UK, Ireland, Germany only" in a list
   is not detected as region-locked unless a wall rule matches its wording.
+- **The poster check is only account age and karma.** An old account can still post a bad
+  job, and a real founder can have a new account. It is a warning label, not proof.
 - **Boards change.** Source adapters can break when a site changes its markup or API; the
   summary message shows how many jobs each source returned, so a silent source stands out.
 

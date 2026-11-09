@@ -247,9 +247,63 @@ def fetch_hn_hiring(src):
             "url": f"https://news.ycombinator.com/item?id={kid}",
             "text": text,
             "source": src["name"],
+            "author": c.get("by", ""),  # HN username, checked later by annotate_hn_authors()
             "loose_title": True,  # the "title" is just the first words of a free-text comment
         })
         time.sleep(0.05)
+    return jobs
+
+
+# ---------- Hacker News poster check ----------
+# Anyone can post in the monthly thread, including brand-new accounts with no company behind
+# them. A very new or empty account is labelled and ranked lower (never blocked).
+NEW_ACCOUNT_DAYS = 30
+LOW_KARMA = 5
+YOUNG_ACCOUNT_DAYS = 180
+HN_AUTHOR_CHECK_CAP = 40  # at most this many distinct accounts looked up per run
+
+
+def hn_user(author, get=requests.get):
+    """Public profile of a Hacker News account: {'created': unix time, 'karma': n, ...}."""
+    r = get(f"https://hacker-news.firebaseio.com/v0/user/{author}.json", timeout=10)
+    r.raise_for_status()
+    return r.json() or {}
+
+
+def hn_author_flag(user, now=None):
+    """Short label when the account is brand new, or young with almost no karma; else ''."""
+    if not user or "created" not in user:
+        return ""
+    now = time.time() if now is None else now
+    age_days = max(0, (now - user["created"]) / 86400)
+    karma = user.get("karma") or 0
+    if age_days < NEW_ACCOUNT_DAYS or (karma < LOW_KARMA and age_days < YOUNG_ACCOUNT_DAYS):
+        return f"HN poster account {int(age_days)} days old, karma {karma}"
+    return ""
+
+
+def annotate_hn_authors(jobs, fetch=hn_user, cap=HN_AUTHOR_CHECK_CAP, now=None):
+    """Label jobs whose Hacker News poster account looks new or empty, and rank them lower.
+
+    Only jobs that carry an `author` are checked, and a failed lookup never changes a job.
+    """
+    seen, lookups = {}, 0
+    for j in jobs:
+        author = j.get("author")
+        if not author:
+            continue
+        if author not in seen:
+            if lookups >= cap:
+                continue
+            lookups += 1
+            try:
+                seen[author] = hn_author_flag(fetch(author), now)
+            except Exception:  # noqa: BLE001 - a failed lookup must not stop the run
+                seen[author] = ""
+        if seen[author]:
+            j["flags"] = list(j.get("flags") or []) + [seen[author]]
+            j["score"] = max(0, j.get("score", 0) - 4)
+            j["suspect"] = True
     return jobs
 
 
