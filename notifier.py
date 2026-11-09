@@ -24,13 +24,14 @@ def format_job(job):
         if job.get("score") is not None else ""
     part = "  🕒 part-time/contract" if job.get("part_time") else ""
     game = "  🎮 game industry" if job.get("game") else ""
+    abroad = "  🌍 hires abroad" if job.get("abroad") else ""
     level = {"senior": "  🧭 senior title", "early": "  🌱 junior/mid"}.get(job.get("level"), "")
     flags = job.get("flags")
     flag_label = esc(job.get("flag_label", "check"))
     flagged = f"\n⚠️ {flag_label}: {esc(', '.join(flags))}" if flags else ""
     ref = f"\nref: <code>{esc(job['ref'])}</code>" if job.get("ref") else ""
     return (
-        f"{tag}<b>{esc(job['title'])}</b>{score}{money}{years}{level}{part}{game}\n"
+        f"{tag}<b>{esc(job['title'])}</b>{score}{money}{years}{level}{part}{game}{abroad}\n"
         f"{esc(job['source'])}{company}{flagged}\n{esc(job['url'])}{ref}"
     )
 

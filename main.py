@@ -21,8 +21,8 @@ import yaml
 from filters import filter_jobs
 from notifier import format_summary, notify
 from prefs import apply_prefs, load_prefs
+from sources import annotate_hn_authors, fetch_all
 from sources import configure as configure_sources
-from sources import fetch_all
 
 # Paths can be overridden from the environment (e.g. by Docker) so the state
 # file can live in a mounted volume instead of inside the container.
@@ -146,6 +146,9 @@ def main():
 
     for j in new_jobs:
         j["ref"] = make_ref(j["id"])
+
+    # Label Hacker News posts from brand-new or empty accounts (only the new matches).
+    annotate_hn_authors(new_jobs)
 
     # Best fit score first (ties keep source order, since Python's sort is stable).
     new_jobs.sort(key=lambda j: -j.get("score", 0))

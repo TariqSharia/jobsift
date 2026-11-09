@@ -134,6 +134,12 @@ def title_level(title):
     return ""
 
 
+def abroad_signal(job, config):
+    """True when the posting suggests it hires people abroad (contractor, employer of record,
+    'any time zone'). A label and a small score bonus, never a block."""
+    return _contains_any(job["text"].lower(), config.get("abroad_signal_keywords", []))
+
+
 def game_flag(job, config):
     """True when the posting looks like the game industry (a label, not a block)."""
     head = f"{job['title']} {job.get('company', '')} {job['text'][:1200]}".lower()
@@ -169,6 +175,8 @@ def score_job(job, config):
     if _contains_any(title, config.get("deprioritize_title_keywords", [])):
         score -= 3
     if job.get("part_time"):
+        score += 1
+    if job.get("abroad"):
         score += 1
     if _matches_any_pattern(title, config.get("mismatch_title_patterns", [])):
         score -= 3
@@ -257,6 +265,7 @@ def filter_jobs(jobs, config):
         job["flag_label"] = config.get("flag_label", "check")
         job["game"] = game_flag(job, config)
         job["part_time"] = part_time_flag(job)
+        job["abroad"] = abroad_signal(job, config)
         job["level"] = title_level(job["title"])
         job["score"] = score_job(job, config)
         kept.append(job)

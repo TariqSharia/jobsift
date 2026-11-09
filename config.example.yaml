@@ -209,6 +209,12 @@ exclude_patterns:
   - 'overlap (with )?(the )?(us|north america\w*|american|pacific|eastern|central)\b'
   - '\b(us|north america\w*|american) (time ?zones?|business hours|working hours)'
   - 'utc\s*-\s*[5-9]\b(?![^.\n]{0,20}\+)'
+  # Office walls: "remote" posts that still need you in a city, or a local language.
+  - '\bhybrid (role|work|working|model|position|schedule|arrangement|setup|set-up)\b'
+  - '\b(\d|one|two|three|four) days? (a|per|each) week (in|at) (the |our )?(office|headquarters)'
+  - '\b(fortnightly|weekly|monthly|regular) (visits?|trips?|days?) (to|in|at) (the |our )?(\w+ ){0,2}office'
+  - '\b(office[- ]based|onsite only|on-site only|on-site required|onsite required)\b'
+  - '\b(fluent|native|c1|c2|proficient)\b[^.\n]{0,20}\b(polish|bulgarian|german|french|dutch|spanish|portuguese|italian|romanian|czech|swedish|danish|finnish|norwegian)\b'
   - 'willing to relocate'
   - 'seeking work|available for hire|open to (work|opportunities)'
   - 'looking for:'
@@ -227,6 +233,21 @@ strong_signal_keywords:
   - "emea"
   - "remote europe"
   - "remote - europe"
+
+# Phrases that suggest the employer hires people abroad (contractors, an employer-of-record
+# service, any time zone). Shown as "🌍 hires abroad" and worth +1 score; never a block.
+abroad_signal_keywords:
+  - "employer of record"
+  - "independent contractor"
+  - "b2b contract"
+  - "hire globally"
+  - "hiring globally"
+  - "hire anywhere"
+  - "any time zone"
+  - "any timezone"
+  - "all time zones"
+  - "via deel"
+  - "through deel"
 
 # Where you live. Both are optional.
 # home_region_terms: extra words that make a location field count as open to you, for example
